@@ -380,9 +380,10 @@ function! s:open_browser(uri) "{{{
             continue
         endif
 
+        let uri_escaped = g:__openbrowser_platform.mswin ? '"'.uri.'"' : uri
         let cmdline = s:expand_keywords(
         \   open_rules[browser],
-        \   {'browser': browser, 'uri': uri}
+        \   {'browser': browser, 'uri': uri_escaped}
         \)
         call system(cmdline)
         " No need to check v:shell_error
