@@ -142,6 +142,10 @@ endif
 if !exists('g:openbrowser_open_vim_command')
     let g:openbrowser_open_vim_command = 'vsplit'
 endif
+
+if !exists('g:openbrowser_tolerant_uri')
+    let g:openbrowser_tolerant_uri = 1
+endif
 " }}}
 
 
@@ -180,6 +184,8 @@ function! openbrowser#open(uri) "{{{
             endif
             call s:open_browser(fullpath)
         endif
+    elseif s:get_var('openbrowser_tolerant_uri')
+        call s:open_browser(uri)
     elseif s:seems_uri(uri)    " other URI
         let obj = urilib#new_from_uri_like_string(uri, s:NONE)
         if obj is s:NONE
