@@ -144,7 +144,7 @@ if !exists('g:openbrowser_open_vim_command')
 endif
 
 if !exists('g:openbrowser_tolerant_uri')
-    let g:openbrowser_tolerant_uri = 1
+    let g:openbrowser_tolerant_uri = 0
 endif
 " }}}
 
