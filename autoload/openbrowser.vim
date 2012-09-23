@@ -9,6 +9,10 @@ set cpo&vim
 
 " Default values of global variables. "{{{
 if g:__openbrowser_platform.cygwin
+    if !exists('g:openbrowser_fallback_open')
+        let g:openbrowser_fallback_open = 0
+    endif
+
     function! s:get_default_open_commands()
         return ['cygstart']
     endfunction
@@ -16,6 +20,10 @@ if g:__openbrowser_platform.cygwin
         return {'cygstart': '{browser} {shellescape(uri)} &'}
     endfunction
 elseif g:__openbrowser_platform.macunix
+    if !exists('g:openbrowser_fallback_open')
+        let g:openbrowser_fallback_open = 1
+    endif
+
     function! s:get_default_open_commands()
         return ['open']
     endfunction
@@ -23,6 +31,10 @@ elseif g:__openbrowser_platform.macunix
         return {'open': '{browser} {shellescape(uri)} &'}
     endfunction
 elseif g:__openbrowser_platform.mswin
+    if !exists('g:openbrowser_fallback_open')
+        let g:openbrowser_fallback_open = 0
+    endif
+
     function! s:get_default_open_commands()
         return ['cmd.exe']
     endfunction
@@ -33,6 +45,10 @@ elseif g:__openbrowser_platform.mswin
         return {'cmd.exe': 'cmd /c start rundll32 url.dll,FileProtocolHandler {uri}'}
     endfunction
 elseif g:__openbrowser_platform.unix
+    if !exists('g:openbrowser_fallback_open')
+        let g:openbrowser_fallback_open = 0
+    endif
+
     function! s:get_default_open_commands()
         return ['xdg-open', 'x-www-browser', 'firefox', 'w3m']
     endfunction
@@ -142,6 +158,7 @@ endif
 if !exists('g:openbrowser_open_vim_command')
     let g:openbrowser_open_vim_command = 'vsplit'
 endif
+
 " }}}
 
 
@@ -198,8 +215,14 @@ function! openbrowser#open(uri) "{{{
         let uri = obj.to_string()
         call s:open_browser(uri)
     else
-        " Error
-        return
+        " Error -> Fallback
+        if g:openbrowser_fallback_open
+            try
+                call s:open_browser(uri)
+            catch /^Vim\%((\a\+)\)\=:E/
+                throw 'openbrowser: fallback open error: ' . v:exception
+            endtry
+        endif
     endif
 endfunction "}}}
 
